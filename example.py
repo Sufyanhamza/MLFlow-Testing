@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.linear_model import ElasticNet
 from urllib.parse import urlparse
 import mlflow
-from mlflow.models.signature import infer_signature
+from mlflow.models.signature import infer_signature 
 import mlflow.sklearn   
 
 import logging 
@@ -69,8 +69,13 @@ if __name__ == "__main__":
         mlflow.log_metric("r2", r2)
         mlflow.log_metric("mae", mae)
 
-        predictions = lr.predict(train_x)
-        signature = infer_signature(train_x, predictions)
+        # It's for a local system
+        # predictions = lr.predict(train_x)
+        # signature = infer_signature(train_x, predictions)
+
+        # For Remote server only (Dagshub)
+        remote_server_uri = "https://dagshub.com/sufyan.hamza07/MLFlow-Testing.mlflow"
+        mlflow.set_tracking_uri(remote_server_uri) 
 
         tracking_url_type_store = urlparse(mlflow.get_tracking_uri()).scheme
 
@@ -82,8 +87,6 @@ if __name__ == "__main__":
             # There are other ways to use the Model Registry, which depends on the use case.
             # For more information, including how to work with the Model Registry, see:
             # https://www.mlflow.org/docs/latest/model-registry.html#api-details
-            mlflow.sklearn.log_model(
-                lr, "model", registered_model_name="ElasticnetWineModel", signature=signature
-                )
+            mlflow.sklearn.log_model(lr, "model", registered_model_name="ElasticnetWineModel")
         else:
-            mlflow.sklearn.log_model(lr, "model", signature=signature) 
+            mlflow.sklearn.log_model(lr, "model") 
